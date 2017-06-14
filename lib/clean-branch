@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+require 'open3'
+
+=begin
+remove all branch for current git project expect master develop and current branch
+=end
+
+PROTECT_BRANCH = %w(master develop)
+CURRENT_BRANCH_REGULAR = /^\*\s(.+)$/
+
+# 获取除了保护分支以及当前分支之外的所有分支
+define_method :get_branch_list do
+  cmd = "git branch"
+
+  stdout, stderr, status = Open3.capture3(cmd)
+  if stderr.empty?
+    stdout.split("\n").map {|branch|
+      # remove blank
+      branch.strip!
+      if PROTECT_BRANCH.include?(branch) \
+        || branch.match(CURRENT_BRANCH_REGULAR)
+      else
+        branch
+      end
+    }.compact
+  else
+    puts "does not command"
+  end
+end
+
+define_method :remove_all_branch do
+  get_branch_list.each do |branch|
+    cmd = "git branch -D #{branch}"
+
+    # remove branch
+    `#{cmd}`
+  end
+end
+
+remove_all_branch
