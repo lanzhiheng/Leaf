@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+FILE_NAME = '.DS_Store'
+
+list = Dir.glob("./**/#{FILE_NAME}")
+
+list.each { |x| `rm #{x}` }
